@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Spotify Artist Search</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="container">
+        <h1>Spotify Artist Search</h1>
+        <!-- Button to log in with Spotify -->
+        <a href="http://localhost:5000/auth">Login with Spotify</a>=
+        <div id="search-section" style="display:none;">
+            <input type="text" id="artist-name" placeholder="Enter artist name" />
+            <button id="search-btn" onclick="searchArtist()">Search</button>
+            <ul id="track-list"></ul>
+        </div>
+    </div>
+
+    <script src="spotify.js"></script>
+</body>
+</html>
