@@ -59,17 +59,13 @@ app.get('/callback', async (req, res) => {
 
         console.log("Access Token:", accessToken);
 
-        // ✅ Redirect back to the frontend (make sure it's running!)
-        res.redirect(`http://localhost:3000/?access_token=${accessToken}`);
+        // Redirect to the exact address where Live Server is running
+        res.redirect(`http://127.0.0.1:5500/index.html?access_token=${accessToken}`);
     } catch (error) {
         console.error("Error exchanging code for token:", error.response?.data || error.message);
         res.send("Error getting access token.");
     }
 });
-
-
-
-
 
 
 

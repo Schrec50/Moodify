@@ -1,13 +1,15 @@
 // Extract the access token from the URL after redirection
 const urlParams = new URLSearchParams(window.location.search);
-const accessToken = urlParams.get('access_token');
+const accessToken = urlParams.get('access_token') || localStorage.getItem('spotify_access_token');
 
 if (accessToken) {
     console.log("Access Token:", accessToken);
-    // Store the token for later use (e.g., in localStorage or a variable)
+    // Store the token in localStorage for later use
     localStorage.setItem('spotify_access_token', accessToken);
+    document.getElementById('search-section').style.display = 'block'; // 
+} else {
+    console.log("No access token found. User may need to log in.");
 }
-
 
 // Function to search for an artist and get top tracks
 async function searchArtist() {
@@ -18,30 +20,36 @@ async function searchArtist() {
     }
 
     try {
-        // Fetch the access token from the server (ensure access token is available after auth)
-        const tokenResponse = await fetch('http://localhost:5000/get-access-token'); // Adjust as needed
-        const tokenData = await tokenResponse.json();
-        const accessToken = tokenData.access_token;
+        // Use stored access token
+        const storedToken = localStorage.getItem('spotify_access_token');
+        if (!storedToken) {
+            alert('No access token available. Please log in.');
+            return;
+        }
 
         // Fetch the artist ID using the search API
         const artistResponse = await fetch(`https://api.spotify.com/v1/search?q=${artistName}&type=artist&limit=1`, {
             headers: {
-                'Authorization': `Bearer ${accessToken}`
+                'Authorization': `Bearer ${storedToken}`
             }
         });
 
         const artistData = await artistResponse.json();
+        if (!artistData.artists.items.length) {
+            alert('Artist not found. Try another name.');
+            return;
+        }
+
         const artistId = artistData.artists.items[0].id; // Get the first artist's ID
 
         // Fetch the artist's top tracks
         const topTracksResponse = await fetch(`https://api.spotify.com/v1/artists/${artistId}/top-tracks?market=US`, {
             headers: {
-                'Authorization': `Bearer ${accessToken}`
+                'Authorization': `Bearer ${storedToken}`
             }
         });
 
         const topTracks = await topTracksResponse.json();
-
         displayTopTracks(topTracks);
     } catch (error) {
         console.error('Error searching for artist:', error);
