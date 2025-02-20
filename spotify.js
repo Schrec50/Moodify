@@ -36,19 +36,30 @@ function displayTopTracks(tracks) {
         const listItem = document.createElement('li');
         listItem.textContent = track.name;
 
+        // Create a button container
+        const buttonContainer = document.createElement('div');
+        buttonContainer.classList.add('button-container');
+
+        // Like button
         const likeButton = document.createElement('button');
         likeButton.textContent = "Like";
         likeButton.onclick = () => likeSong(track, listItem);
 
+        // Dislike button
         const dislikeButton = document.createElement('button');
         dislikeButton.textContent = "Dislike";
         dislikeButton.onclick = () => removeSongFromList(listItem);
 
-        listItem.appendChild(likeButton);
-        listItem.appendChild(dislikeButton);
+        // Append buttons inside the button container
+        buttonContainer.appendChild(likeButton);
+        buttonContainer.appendChild(dislikeButton);
+
+        // Append everything to list item
+        listItem.appendChild(buttonContainer);
         trackList.appendChild(listItem);
     });
 }
+
 
 async function likeSong(track, listItem) {
     const songData = {

@@ -33,9 +33,16 @@ const spotifyApi = new SpotifyWebApi({
 
 // ==================== Authenticate with Spotify ==================== //
 app.get('/auth', (req, res) => {
-    const scopes = ['playlist-modify-public', 'playlist-modify-private', 'user-read-private', 'user-top-read'];
+    const scopes = [
+        'user-top-read',        // Needed for recommendations
+        'user-library-read',    // Needed for fetching saved tracks
+        'playlist-modify-public', // Needed to create public playlists
+        'playlist-modify-private' // Needed to create private playlists
+    ];
     res.redirect(spotifyApi.createAuthorizeURL(scopes, 'state-token'));
 });
+
+
 
 // ==================== Handle Spotify Callback & Retrieve Tokens ==================== //
 app.get('/callback', async (req, res) => {
@@ -53,7 +60,7 @@ app.get('/callback', async (req, res) => {
         const userData = await spotifyApi.getMe();
         const userId = userData.body.id;
 
-        res.redirect(`http://127.0.0.1:5500/index.html?access_token=${data.body['access_token']}&refresh_token=${data.body['refresh_token']}&user_id=${userId}`);
+        res.redirect(`http://127.0.0.1:5500/Page2.html?access_token=${data.body['access_token']}&refresh_token=${data.body['refresh_token']}&user_id=${userId}`);
     } catch (error) {
         console.error("Spotify Auth Error:", error);
         res.status(500).send("Error during authentication.");
@@ -68,24 +75,45 @@ app.get('/get-recommendations', async (req, res) => {
             return res.status(401).json({ error: "Access token missing or invalid. Please log in again." });
         }
 
-        // Fetch the user's top tracks
-        const topTracksData = await spotifyApi.getMyTopTracks({ limit: 5 });
-        if (!topTracksData.body.items.length) {
-            return res.status(404).json({ error: "No top tracks found. Please listen to more music on Spotify." });
+        // Step 1: Fetch 50 Top Artists
+        const topArtistsData = await spotifyApi.getMyTopArtists({ limit: 50 });
+        if (!topArtistsData.body.items.length) {
+            return res.status(404).json({ error: "No top artists found. Please listen to more music on Spotify." });
         }
 
-        // Get first artist from user's top tracks
-        const firstArtistId = topTracksData.body.items[0].artists[0].id;
+        const shuffledArtists = topArtistsData.body.items.sort(() => Math.random() - 0.5);
+        let recommendedTracks = [];
 
-        // Fetch top tracks of that artist
-        const artistTopTracks = await spotifyApi.getArtistTopTracks(firstArtistId, 'US');
+        for (let i = 0; i < shuffledArtists.length; i++) {
+            const artist = shuffledArtists[i];
 
-        res.json(artistTopTracks.body.tracks.slice(0, 5)); // Return 5 recommended tracks
+            try {
+                // Step 2: Fetch top tracks for the artist
+                const topTracksData = await spotifyApi.getArtistTopTracks(artist.id, 'US');
+
+                if (topTracksData.body.tracks.length > 0) {
+                    const randomTrack = topTracksData.body.tracks[Math.floor(Math.random() * topTracksData.body.tracks.length)];
+                    recommendedTracks.push(randomTrack);
+                }
+            } catch (error) {
+                console.error(`Skipping artist ${artist.name} due to error:`, error.message);
+            }
+
+            // Stop after collecting 5 unique songs from 5 different artists
+            if (recommendedTracks.length >= 5) break;
+        }
+
+        if (recommendedTracks.length === 0) {
+            return res.status(500).json({ error: "No recommendations found. Try listening to more music." });
+        }
+
+        res.json(recommendedTracks);
     } catch (error) {
         console.error("Error fetching recommendations:", error);
         res.status(500).json({ error: "Failed to fetch recommendations", details: error.message });
     }
 });
+
 
 
 // ==================== Store Liked Songs in MySQL ==================== //
