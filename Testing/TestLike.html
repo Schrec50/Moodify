@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Moodify - Music Discovery</title>
+    <link rel="stylesheet" href="TestLike.css">
+</head>
+<body>
+    <div class="container">
+        <h1>Moodify</h1>
+
+        <!-- Login Button -->
+        <div id="login-section">
+            <a href="http://localhost:5000/auth" class="btn">Login with Spotify</a>
+        </div>
+
+        <hr>
+
+        <!-- Recommended Songs Section -->
+        <h2>Recommended Songs</h2>
+        <button id="recommend-btn">Get Recommended Songs</button>
+        <ul id="track-list"></ul>
+
+        <hr>
+
+        <!-- Generate Playlist (Hidden initially, shows after all songs are handled) -->
+        <div id="generate-playlist-section" style="display: none;">
+            <h2>Generate Playlist</h2>
+            <button onclick="generatePlaylist()">Generate Playlist</button>
+        </div>
+    </div>
+
+    <script src="spotify.js"></script>
+</body>
+</html>

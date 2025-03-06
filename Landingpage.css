@@ -14,8 +14,8 @@ body {
     height: 200px;
     background: #00000000;
     position: fixed;
-    top: 82px;
-    left: 488px;
+    top: 150px;
+    left: 620px;
     display: grid;
     place-content: center;
     border-radius: 10px;
@@ -187,8 +187,8 @@ body {
 .button {
     margin: 250px;
     position: relative;
-    top: 82px;
-    left: 333px;
+    top: 150px;
+    left: 460px;
     height: auto;
     background: transparent;
     padding: 0;

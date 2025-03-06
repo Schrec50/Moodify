@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Moodify - Swipe Songs</title>
+    <link rel="stylesheet" href="TinderGUI.css">
+</head>
+<body>
+    <div class="container">
+        <h1>Moodify - Swipe Songs</h1>
+        <div id="song-card-container">
+            <div id="left-zone" class="zone">Dislike</div>
+            <div id="song-card-wrapper"> <!-- Expanded interactive area -->
+                <div id="song-card">
+                    <img id="song-image" src="" alt="Song Image">
+                    <h2 id="song-title" class="label">Title</h2>
+                    <p id="song-artist" class="label">Artist</p>
+                    <p id="song-album" class="label">Album</p>
+                </div>
+            </div>
+            <div id="right-zone" class="zone">Like</div>
+        </div>
+    </div>
+    <script src="spotify.js"></script>
+    <script src="TinderGUI.js"></script>
+</body>
+</html>
