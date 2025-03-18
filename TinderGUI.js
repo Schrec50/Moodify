@@ -1,3 +1,5 @@
+
+//-----------------------------------------------------------------------------------------------------------------------------------------
 let currentSongIndex = 0;
 let songs = [];
 let songCard = document.getElementById("song-card");
@@ -25,7 +27,12 @@ async function fetchRecommendations() {
     }
 }
 
-fetchRecommendations(); // Automatically fetch recommendations on page load
+//fetchRecommendations(); // 
+
+songs = presetSongs;
+currentSongIndex = 0;
+displaySong();
+
 
 function displaySong() {
     if (currentSongIndex >= songs.length) {
@@ -89,10 +96,6 @@ document.addEventListener("mouseup", (event) => {
 });
 
 
-
-
-
-
 function nextSong() {
     currentSongIndex++;
     songCard.classList.remove("swipe-right", "swipe-left");
@@ -104,3 +107,7 @@ function nextSong() {
         fetchRecommendations();
     }
 }
+
+document.getElementById("liked-songs-btn").addEventListener("click", () => {
+    window.location.href = "LikedSongs.html";
+});
