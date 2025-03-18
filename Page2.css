@@ -1,6 +1,6 @@
 body {
     font-family: Arial, sans-serif;
-    background: linear-gradient(to right, #2c2f33, #1f820e); /* Gradient background */
+    background: linear-gradient(to right, #2c2f33, #023d28); /* Gradient background */
     height: auto;
     margin: 0;
     padding: 0; 
@@ -16,9 +16,9 @@ cursor: pointer;
 .account-name-box {
     position: absolute;
     top: 85px;  /* Moves it below the logo */
-    left: 2.8%;
+    left: 100px;
     transform: translateX(-50%) translateY(-10px); /* Center it & shift up */
-    background-color: #1f820e;
+    background-color: hsla(128, 55.00%, 59.11%, 1.00);
     color: white;
     padding: 10px;
     border-radius: 10px;
@@ -154,6 +154,8 @@ cursor: pointer;
     transform: translate(2px, 2px);
   }
 
+
+  /*Swipe GUI*/
   .container {
     width: 100%;
     max-width: 450px;
@@ -175,9 +177,9 @@ cursor: pointer;
 }
 
 #song-card {
-    top: 10%;
-    left: 0%;
-    background: #1DB954;
+    top: 0%;
+    left: 140%;
+    background: hsla(128, 55.00%, 59.11%, 1.00);
     border-radius: 15px;
     padding: 20px;
     box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
@@ -191,6 +193,8 @@ cursor: pointer;
     justify-content: center;
     transition: transform 0.5s ease-out;
     cursor: grab;
+    z-index: 10; /* Ensure the song card is on top */
+    
 }
 
 #song-image {
@@ -216,6 +220,8 @@ cursor: pointer;
     color: #ddd;
 }
 
+/* Like and Dislike Buttons and Zones*/
+
 .zone {
     position: absolute;
     width: 100px;
@@ -228,18 +234,20 @@ cursor: pointer;
     color: white;
     background-color: rgba(0, 0, 0, 0.5);
     border-radius: 10px;
+    z-index: 5; /* Lower than the song card */
 }
 
 #left-zone {
-    left: -120px;
+    left: 150px;
     top: 50%;
     transform: translateY(-50%);
 }
 
 #right-zone {
-    right: -120px;
+    right: -950px;
     top: 50%;
     transform: translateY(-50%);
+    
 }
 
 .swipe-right {
@@ -252,3 +260,31 @@ cursor: pointer;
     opacity: 0;
 }
   
+/* Song Selection Title */
+
+.Song-Selection {
+    display: block;
+    overflow: visible;
+    box-sizing: border-box;
+    min-width: 0px;
+    border: 1px solid #000; /* Consistent border on all sides */
+    border-radius: 15px; /* Rounded corners */
+    background-color: hsla(128, 55.00%, 59.11%, 1.00);
+    font-family: system-ui;
+    color: hsla(0, 0.00%, 100.00%, 1.00);
+    font-size: 22px;
+    font-weight: 600;
+    object-fit: none;
+    width: 200px; /* Adjust width for rectangle */
+    height: 50px; /* Adjust height */
+    text-align: center;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    margin: 0 auto;
+    position: relative;
+    left: 550px;
+    top: -70px;
+}
+

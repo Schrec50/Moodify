@@ -57,46 +57,39 @@ document.addEventListener("mousemove", (event) => {
 });
 
 document.addEventListener("mouseup", (event) => {
-if (!isHolding) return;
-isHolding = false;
-let diff = event.clientX - startX;
-songCard.style.transition = "transform 0.3s ease-out"; // Smooth return or exit transition
+    if (!isHolding) return;
+    isHolding = false;
 
-if (diff > threshold) {
-songCard.classList.add("swipe-right");
-likeSong(songs[currentSongIndex]);
-setTimeout(nextSong, 300);
-} else if (diff < -threshold) {
-songCard.classList.add("swipe-left");
-setTimeout(() => {
-    songCard.classList.remove("swipe-left");
-    nextSong();
-}, 300);
-} else {
-songCard.style.transform = "translateX(0px) rotate(0deg)";
-}
+    let currentX = event.clientX;
+    let diff = currentX - startX;
+    let cardRect = songCard.getBoundingClientRect(); // Get current card position
+
+    songCard.style.transition = "transform 0.3s ease-out";
+
+    if (diff > threshold || cardRect.right > window.innerWidth - 150) {
+        // Right swipe (Like), triggers if:
+        // - diff is greater than threshold (normal behavior)
+        // - OR the card has moved close to the right edge
+        console.log("Right swipe detected:", diff, "Card Right Position:", cardRect.right);
+        songCard.classList.add("swipe-right");
+        likeSong(songs[currentSongIndex]);
+        setTimeout(nextSong, 300);
+    } else if (diff < -threshold || cardRect.left < 150) {
+        // Left swipe (Dislike), same logic as before
+        console.log("Left swipe detected:", diff, "Card Left Position:", cardRect.left);
+        songCard.classList.add("swipe-left");
+        setTimeout(() => {
+            nextSong();
+            songCard.classList.remove("swipe-left");
+        }, 300);
+    } else {
+        // Reset position if not far enough
+        songCard.style.transform = "translateX(0px) rotate(0deg)";
+    }
 });
 
-document.addEventListener("mouseup", (event) => {
-if (!isHolding) return;
-isHolding = false;
-let diff = event.clientX - startX;
-songCard.style.transition = "transform 0.3s ease-out"; // Smooth return or exit transition
 
-if (diff > threshold) {
-songCard.classList.add("swipe-right");
-likeSong(songs[currentSongIndex]);
-setTimeout(nextSong, 300);
-} else if (diff < -threshold) {
-songCard.classList.add("swipe-left");
-setTimeout(() => {
-    songCard.classList.remove("swipe-left");
-    nextSong();
-}, 300);
-} else {
-songCard.style.transform = "translateX(0px) rotate(0deg)";
-}
-});
+
 
 
 
