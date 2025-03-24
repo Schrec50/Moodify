@@ -179,23 +179,6 @@ app.post('/generate-playlist', async (req, res) => {
 });
 
 
-// ==================== Clear Liked Songs and Generate Playlist (LikedSongs.js) ==================== //
-// Get all liked songs
-app.get('/get-liked-songs', (req, res) => {
-    db.query("SELECT * FROM songs", (err, results) => {
-        if (err) return res.status(500).json({ error: "Database error" });
-        res.json(results);
-    });
-});
-
-// Clear all liked songs
-app.post('/clear-liked-songs', (req, res) => {
-    db.query("DELETE FROM songs", (err) => {
-        if (err) return res.status(500).json({ error: "Failed to clear songs" });
-        res.json({ message: "Liked songs cleared successfully" });
-    });
-});
-
 
 // ==================== Start Express Server ==================== //
 app.listen(port, () => console.log(`Server running on http://localhost:${port}`));
