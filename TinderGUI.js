@@ -4,6 +4,28 @@ let songCard, songCardWrapper;
 let startX, isHolding = false;
 const threshold = 200;
 
+
+//Search for song and refresh song card
+async function searchAndInjectSong() {
+    const query = document.getElementById("song-search-input").value;
+    if (!query) return;
+
+    try {
+        const response = await fetch(`http://localhost:5000/search-track?q=${encodeURIComponent(query)}`);
+        if (!response.ok) throw new Error("Search failed");
+
+        const track = await response.json();
+        songs.splice(currentSongIndex, 0, track);
+        displaySong();
+    } catch (error) {
+        alert("No results or error searching.");
+        console.error(error);
+    }
+}
+
+
+
+
 document.addEventListener("DOMContentLoaded", () => {
     songCard = document.getElementById("song-card");
     songCardWrapper = document.getElementById("song-card-wrapper");
@@ -19,6 +41,7 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 });
 
+//Fetch Recommendations from web api.
 async function fetchRecommendations() {
     try {
         console.log("Fetching recommendations...");
@@ -30,29 +53,45 @@ async function fetchRecommendations() {
 
         currentSongIndex = 0;
         displaySong();
+
     } catch (error) {
         console.error("Error fetching recommendations:", error);
         alert("Failed to fetch recommendations. Check console for details.");
     }
 }
 
+//Display Song to song card
 function displaySong() {
     if (currentSongIndex >= songs.length) {
         alert("No more songs to display");
         return;
     }
 
+    // Hide everything before loading
+    songCard.style.opacity = "0";
+    document.getElementById("left-zone").style.opacity = "0";
+    document.getElementById("right-zone").style.opacity = "0";
+
     const song = songs[currentSongIndex];
     console.log("Displaying song:", song);
 
+    // Set song details
     document.getElementById("song-image").src = song.album.images[0]?.url || "default.jpg";
     document.getElementById("song-title").textContent = song.name;
     document.getElementById("song-artist").textContent = song.artists[0]?.name || "Unknown Artist";
     document.getElementById("song-album").textContent = song.album.name || "Unknown Album";
 
     songCard.style.transform = "translateX(0px) rotate(0deg)";
-    songCard.style.opacity = "1";
+
+    // Fade everything in together
+    setTimeout(() => {
+        songCard.style.opacity = "1";
+        document.getElementById("left-zone").style.opacity = "1";
+        document.getElementById("right-zone").style.opacity = "1";
+    }, 50);
 }
+
+
 
 // Swipe interaction logic
 document.addEventListener("mousedown", (event) => {
@@ -93,16 +132,29 @@ document.addEventListener("mouseup", (event) => {
 
 function nextSong() {
     currentSongIndex++;
+
+    songCard.style.opacity = "0";
+    document.getElementById("left-zone").style.opacity = "0";
+    document.getElementById("right-zone").style.opacity = "0";
+
+
+    // Reset swipe-related styles
     songCard.classList.remove("swipe-right", "swipe-left");
     songCard.style.transition = "none";
     songCard.style.transform = "translateX(0px) rotate(0deg)";
+    songCard.style.opacity = "0"; // Hide card before showing next
+
     if (currentSongIndex < songs.length) {
-        displaySong();
+        // Wait briefly so swipe-out feels natural before fading next song in
+        setTimeout(() => {
+            displaySong();
+        }, 200); // Adjust as needed
     } else {
-        fetchRecommendations(); // Loop back to a fresh set if needed
+        fetchRecommendations(); // Loop back to fresh set
     }
 }
 
+//Like Song Button
 async function likeSong(song) {
     const songData = {
         spotify_id: song.id,
