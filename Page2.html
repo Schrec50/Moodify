@@ -6,7 +6,9 @@
     <title>Dashboard</title>
     <link rel="stylesheet" href="Page2.css">
 </head>
+
 <body>
+    <!-- Navigation Bar/Account Name-->
     <div class="NavContainer"> 
         <nav>
             <div class="Navbar">
@@ -46,6 +48,20 @@
             
         </button>  
     </div>  
+
+    <!-- Search bar -->
+<div style="position: absolute; top: 25px; left: 1000px; display: flex; align-items: center; gap: 10px;">
+    <input type="text" id="song-search-input" placeholder="Search for a song..."
+        style="padding: 8px 12px; border-radius: 20px; border: none; font-size: 14px; width: 200px;" />
+    <button onclick="searchAndInjectSong()"
+        style="background-color: #1DB954; color: white; border: none; border-radius: 20px; padding: 8px 16px; font-weight: bold; cursor: pointer;">
+        Search
+    </button>
+</div>
+
+
+
+    <!-- Song Card Container-->
     <div class="container">
         <h1 class = "Song-Selection"> Song Selection </h1>
         <div id="song-card-container">
@@ -62,8 +78,11 @@
         </div>
     </div>
 
-<script src="TinderGUI.js"></script> 
+<!-- Used Scripts-->
+<script src="TinderGUI.js"></script>
 <script src="spotify.js"></script>
+<script src="LikedSongs.js"></script>
+
 </body>
 </html>
 

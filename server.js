@@ -195,6 +195,22 @@ app.post('/clear-liked-songs', (req, res) => {
         res.json({ message: "Liked songs cleared successfully" });
     });
 });
+// ==================== Search Songs (Searchbar/ Tinder.GUI) ==================== //
+app.get('/search-track', async (req, res) => {
+    try {
+        const query = req.query.q;
+        if (!query) return res.status(400).json({ error: "Missing search query." });
+
+        const data = await spotifyApi.searchTracks(query, { limit: 1 });
+        if (!data.body.tracks.items.length) return res.status(404).json({ error: "No track found." });
+
+        res.json(data.body.tracks.items[0]);
+    } catch (error) {
+        console.error("Error in /search-track:", error);
+        res.status(500).json({ error: "Search failed." });
+    }
+});
+
 
 
 // ==================== Start Express Server ==================== //

@@ -84,7 +84,7 @@ cursor: pointer;
     }
 }
 
-/* logoutbutton */ 
+/* logoutbutton and liked songs*/ 
 .Btn {
     display: flex;
     align-items: center;
@@ -126,7 +126,7 @@ cursor: pointer;
     right: 0%;
     width: 0%;
     opacity: 0;
-    color: black;
+    color: rgb(255, 255, 255);
     font-size: 1.2em;
     font-weight: 600;
     transition-duration: 0.3s;
@@ -193,7 +193,8 @@ cursor: pointer;
     flex-direction: column;
     align-items: center;
     justify-content: center;
-    transition: transform 0.5s ease-out;
+    opacity: 0; /* Hide initially */
+    transition: opacity 0.4s ease, transform 0.5s ease-out;
     cursor: grab;
     z-index: 10; /* Ensure the song card is on top */
     
@@ -238,6 +239,8 @@ cursor: pointer;
     background-color: rgba(0, 0, 0, 0.5);
     border-radius: 10px;
     z-index: 5; /* Lower than the song card */
+    opacity: 0;
+    transition: opacity 0.4s ease;
 }
 
 #left-zone {
@@ -421,8 +424,7 @@ cursor: pointer;
     }
 }
 
-/*-----------------------------------------------------------------------------------------------------------------------------------------------*/
-/*Hide Scrollbars*/
+/*-------------------------------------------------------------Hide Scroll Bars-----------------------------------------------------------------*/
 
 /* Hide Scrollbars for the Entire Page */
 body {
@@ -443,4 +445,11 @@ body {
 /* Remove Scrollbars for Firefox */
 html {
     scrollbar-width: none; /* Hides scrollbar in Firefox */
+}
+
+
+/*---------------------------------------------------------------Search Bar Styling------------------------------------------------------------*/
+.search-bar {
+    right: 400px;
+
 }
