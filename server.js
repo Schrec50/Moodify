@@ -14,7 +14,7 @@ app.use(express.json());
 const db = mysql.createConnection({
     host: 'localhost',
     user: 'root',
-    password: 'JavaFantasy321!',
+    password: 'root',
     database: 'moodify',
     port: 3308
 });
