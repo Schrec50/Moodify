@@ -73,24 +73,57 @@ document.addEventListener("DOMContentLoaded", () => {
     const subGenreContainer = document.getElementById("sub-genre-container");
 
     const genreMap = {
-        pop: ["dance", "electropop", "pop-film", "power-pop"],
-        rock: ["alt-rock", "hard-rock", "punk", "metal"],
-        hiphop: ["hip-hop", "trap", "r-n-b"],
-        electronic: ["edm", "house", "trance", "dubstep"],
-        metal: ["metal", "death-metal", "metalcore", "heavy-metal"],
-        indie: ["indie", "indie-pop", "folk", "emo"],
-        latin: ["latin", "reggaeton", "salsa", "bachata"],
-        japanese: ["j-pop", "j-rock", "anime", "j-idol"],
-        jazz: ["jazz", "blues", "soul", "funk"],
-        other: ["classical", "opera", "world-music", "experimental"]
-    };
+        pop: ["pop", "pop-film", "power-pop"],
+        rock: ["rock", "alt-rock", "hard-rock", "punk", "punk-rock", "rock-n-roll", "grunge", "garage"],
+        hiphop: ["hip-hop", "r-n-b", "emo"],
+        electronic: ["edm", "electronic", "electro", "house", "techno", "trance", "dubstep", "minimal-techno", "deep-house"],
+        metal: ["metal", "heavy-metal", "death-metal", "black-metal", "metalcore", "grindcore"],
+        indie: ["indie", "indie-pop", "singer-songwriter", "folk", "alternative", "songwriter", "guitar"],
+        latin: ["latin", "latino", "salsa", "samba", "sertanejo", "mpb", "forro", "pagode", "brazil"],
+        japanese: ["j-pop", "j-rock", "j-dance", "j-idol", "anime"],
+        jazz: ["jazz", "blues", "funk", "soul"],
+        other: ["ambient", "chill", "classical", "comedy", "gospel", "opera", "new-age", "study", "children", "acoustic", "piano", "sleep", "disney", "show-tunes"]
+      };
 
-    mainGenreSelect.addEventListener("change", () => {
+      mainGenreSelect.addEventListener("change", () => {
         const selectedMain = mainGenreSelect.value;
         const subgenres = genreMap[selectedMain] || [];
-
-        subGenreContainer.innerHTML = subgenres.map(genre =>
-            `<label><input type="checkbox" name="subgenre" value="${genre}"> ${genre}</label><br>`
+    
+        // Prevent duplicates
+        if (document.getElementById(`box-${selectedMain}`)) return;
+    
+        // Create wrapper box
+        const box = document.createElement("div");
+        box.className = "subgenre-box";
+        box.id = `box-${selectedMain}`;
+    
+        // Create header with remove button
+        const header = document.createElement("div");
+        header.style.display = "flex";
+        header.style.justifyContent = "space-between";
+        header.style.alignItems = "center";
+    
+        const title = document.createElement("h4");
+        title.textContent = selectedMain.charAt(0).toUpperCase() + selectedMain.slice(1);
+    
+        const removeBtn = document.createElement("button");
+        removeBtn.textContent = "✕";
+        removeBtn.className = "remove-genre-btn";
+        removeBtn.onclick = () => box.remove();
+    
+        header.appendChild(title);
+        header.appendChild(removeBtn);
+    
+        const checkboxContainer = document.createElement("div");
+        checkboxContainer.className = "subgenre-container";
+        checkboxContainer.innerHTML = subgenres.map(genre =>
+            `<label><input type="checkbox" name="subgenre" value="${genre}"> ${genre}</label>`
         ).join("");
+    
+        box.appendChild(header);
+        box.appendChild(checkboxContainer);
+        document.getElementById("sub-genre-container").appendChild(box);
     });
+    
+    
 });

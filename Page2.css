@@ -560,3 +560,47 @@ html {
     left: 0px;
     top: -70px;
 }
+
+.subgenre-container {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin-top: 10px;
+}
+
+.subgenre-container label {
+    background-color: hsla(128, 55.00%, 49.11%, 1.00); /* optional: to bring back red highlight */
+    border: 1px solid rgb(5, 137, 69);                  /* optional: red box border */
+    border-radius: 6px;
+    padding: 5px 10px;
+    margin: 5px;
+}
+
+.subgenre-box {
+    border: 2px solid red;
+    border-radius: 10px;
+    padding: 15px;
+    margin-bottom: 20px;
+    background-color: rgba(255, 0, 0, 0.05);
+}
+
+.subgenre-box h4 {
+    color: white;
+    margin-bottom: 10px;
+}
+
+
+.remove-genre-btn {
+    background-color: transparent;
+    color: red;
+    border: none;
+    font-size: 20px;
+    font-weight: bold;
+    cursor: pointer;
+    padding: 0 10px;
+}
+
+.remove-genre-btn:hover {
+    color: white;
+}
+
