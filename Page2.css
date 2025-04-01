@@ -58,7 +58,7 @@ cursor: pointer;
     position: absolute; /* Position absolute to slide out */
     top: 5px; /* Align with the top of the logo */
     left: 75px; /* Position to the right of the logo */
-    background: #1f820e; /* Same background as NavContainer */
+    background: hsla(128, 55.00%, 59.11%, 1.00); /* Same background as NavContainer */
     opacity: .7 !important;
     visibility: hidden; /* Initially hidden */
     flex-direction: row; /* Stack links vertically */
@@ -84,7 +84,7 @@ cursor: pointer;
     }
 }
 
-/* logoutbutton */ 
+/* logoutbutton and liked songs*/ 
 .Btn {
     display: flex;
     align-items: center;
@@ -126,7 +126,7 @@ cursor: pointer;
     right: 0%;
     width: 0%;
     opacity: 0;
-    color: black;
+    color: rgb(255, 255, 255);
     font-size: 1.2em;
     font-weight: 600;
     transition-duration: 0.3s;
@@ -452,4 +452,111 @@ html {
 .search-bar {
     right: 400px;
 
+}
+
+/*---------------------------------------------------------------PreferencesPage styling------------------------------------------------------------*/
+/* Page2.css Additions for Preferences Page */
+
+/* Preferences Form Container Styling */
+.pref-form {
+    background-color: #2c2f33;
+    padding: 30px;
+    border-radius: 12px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+    color: white;
+    width: 600px;
+    margin: 0 auto;
+    font-size: 18px;
+    position: relative;
+}
+
+.pref-form h3 {
+    margin-top: 20px;
+    color: hsla(128, 55.00%, 59.11%, 1.00);
+}
+
+.pref-form label {
+    display: block;
+    margin-bottom: 8px;
+    cursor: pointer;
+}
+
+.pref-form input[type="checkbox"] {
+    margin-right: 10px;
+    transform: scale(1.2);
+}
+
+.pref-form select {
+    width: 100%;
+    padding: 10px;
+    font-size: 16px;
+    border-radius: 8px;
+    border: none;
+    margin-top: 10px;
+    background-color: #212121;
+    color: white;
+}
+
+/* Preferences Button Container */
+.pref-button-container {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 10px;
+}
+
+/* Individual Preference Buttons */
+.pref-save-btn, .pref-clear-btn {
+    display: flex;
+    border: 1px solid #000;
+    border-radius: 15px;
+    background-color: hsla(128, 55.00%, 59.11%, 1.00);
+    font-family: system-ui;
+    color: white;
+    font-size: 20px;
+    font-weight: 600;
+    width: 220px;
+    height: 50px;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+}
+
+.pref-save-btn:hover, .pref-clear-btn:hover {
+    background-color: hsla(128, 55.00%, 49.11%, 1.00);
+}
+
+/* Preferences Container Wrapper */
+.pref-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: flex-start;
+    margin-top: 0px;
+}
+
+/* Preferences Page Title */
+.pref-title {
+    display: block;
+    overflow: visible;
+    box-sizing: border-box;
+    min-width: 0px;
+    border: 1px solid #000; /* Consistent border on all sides */
+    border-radius: 15px; /* Rounded corners */
+    background-color: hsla(128, 55.00%, 59.11%, 1.00);
+    font-family: system-ui;
+    color: hsla(0, 0.00%, 100.00%, 1.00);
+    font-size: 22px;
+    font-weight: 600;
+    object-fit: none;
+    width: 200px; /* Adjust width for rectangle */
+    height: 50px; /* Adjust height */
+    text-align: center;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    margin: 0 auto;
+    position: relative;
+    left: 0px;
+    top: -70px;
 }

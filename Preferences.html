@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Music Preferences</title>
+    <link rel="stylesheet" href="Page2.css">
+</head>
+<body>
+    <div class="NavContainer">
+        <nav>
+            <div class="Navbar">
+                <div class="logo-container">
+                    <img src="images/Moodify Logo.png" alt="Spotify Logo" class="spotify-logo" id="logo">
+                    <div class="nav-menu" id="navMenu">
+                        <a href="Page2.html">Home</a>
+                        <a href="AboutUs.html">About us</a>
+                        <a href="Preferences.html">Preferences</a>
+                        <a href="https://www.spotify.com/us/account/overview/">Account</a>
+                    </div>
+                </div>
+            </div>
+        </nav>
+    </div>
+
+        
+
+    <div class="pref-container">
+        <h1 class="pref-title">Preferences</h1>
+        <form id="preferences-form" class="pref-form">
+                <h3>Choose your favorite genres:</h3>
+                <div style="margin-bottom: 1em;">
+                    <label for="main-genre-select">Main Genres:</label>
+                    <select id="main-genre-select" style="width: 100%;">
+                        <option value="">Pick a Main Genre</option>
+                        <option value="pop">Pop</option>
+                        <option value="rock">Rock</option>
+                        <option value="hiphop">Hip Hop</option>
+                        <option value="electronic">Electronic</option>
+                        <option value="metal">Metal</option>
+                        <option value="indie">Indie</option>
+                        <option value="latin">Latin</option>
+                        <option value="japanese">Japanese</option>
+                        <option value="jazz">Jazz</option>
+                        <option value="other">Other</option>
+                    </select>
+                </div>
+
+              
+                <div id="active-genre-tags" style="margin: 10px 0;"></div>
+
+                <div id="sub-genre-container">
+                    <!-- Sub-genre checkboxes will go here -->
+                </div>
+
+
+
+
+                <h3>Pick your vibe:</h3>
+                <select id="vibe-select">
+                    <option value="chill">Chill</option>
+                    <option value="groovy">Groovy</option>
+                    <option value="party">Party</option>
+                    <option value="acoustic">Acoustic</option>
+                </select>
+
+            <h3>Emotional tone:</h3>
+            <select id="mood-select">
+                <option value="happy">Happy</option>
+                <option value="melancholy">Melancholy</option>
+                <option value="motivated">Motivated</option>
+                <option value="calm">Calm</option>
+            </select>
+
+            <h3>Sound texture:</h3>
+            <select id="speech-select">
+                <option value="podcast">Podcast-style</option>
+                <option value="organic">Organic</option>
+                <option value="experimental">Experimental</option>
+            </select>
+
+            <div class="pref-button-container">
+                <button type="button" onclick="savePreferences()" class="pref-save-btn">Save Preferences</button>
+                <button type="button" onclick="clearPreferences()" class="pref-clear-btn">Clear Preferences</button>
+            </div>
+        </form>
+    </div>
+
+    <script src="Preferences.js"></script>
+</body>
+</html>

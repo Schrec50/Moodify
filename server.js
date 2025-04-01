@@ -1,3 +1,4 @@
+//---------------------------------------- Environment Setup ----------------------------------------//
 require('dotenv').config();
 const mysql = require('mysql2');
 const express = require('express');
@@ -10,7 +11,7 @@ const port = 5000;
 app.use(cors());
 app.use(express.json());
 
-// ==================== Initialize MySQL Connection ==================== //
+//---------------------------------------- MySQL Connection ----------------------------------------//
 const db = mysql.createConnection({
     host: 'localhost',
     user: 'root',
@@ -18,33 +19,30 @@ const db = mysql.createConnection({
     database: 'moodify',
     port: 3308
 });
-
 db.connect(err => {
     if (err) throw err;
     console.log("Successfully Connected to MySQL");
 });
 
-// ==================== Initialize Spotify API Client ==================== //
+//---------------------------------------- Spotify API Client Setup ----------------------------------------//
 const spotifyApi = new SpotifyWebApi({
     clientId: process.env.SPOTIFY_CLIENT_ID,
     clientSecret: process.env.SPOTIFY_CLIENT_SECRET,
     redirectUri: process.env.REDIRECT_URI
 });
 
-// ==================== Authenticate with Spotify ==================== //
+//---------------------------------------- Spotify Auth Route ----------------------------------------//
 app.get('/auth', (req, res) => {
     const scopes = [
-        'user-top-read',        // Needed for recommendations
-        'user-library-read',    // Needed for fetching saved tracks
-        'playlist-modify-public', // Needed to create public playlists
-        'playlist-modify-private' // Needed to create private playlists
+        'user-top-read',
+        'user-library-read',
+        'playlist-modify-public',
+        'playlist-modify-private'
     ];
     res.redirect(spotifyApi.createAuthorizeURL(scopes, 'state-token'));
 });
 
-
-
-// ==================== Handle Spotify Callback & Retrieve Tokens ==================== //
+//---------------------------------------- Spotify Callback Handler ----------------------------------------//
 app.get('/callback', async (req, res) => {
     try {
         const code = req.query.code;
@@ -53,9 +51,6 @@ app.get('/callback', async (req, res) => {
         const data = await spotifyApi.authorizationCodeGrant(code);
         spotifyApi.setAccessToken(data.body['access_token']);
         spotifyApi.setRefreshToken(data.body['refresh_token']);
-
-        console.log("New Access Token:", data.body['access_token']);
-        console.log("New Refresh Token:", data.body['refresh_token']);
 
         const userData = await spotifyApi.getMe();
         const userId = userData.body.id;
@@ -67,151 +62,202 @@ app.get('/callback', async (req, res) => {
     }
 });
 
-// ==================== Get Recommended Songs ==================== //
+//---------------------------------------- Get Recommendations (from Preferences + Spotify API) ----------------------------------------//
 app.get('/get-recommendations', async (req, res) => {
-    try {
-        const accessToken = spotifyApi.getAccessToken();
-        if (!accessToken) {
-            return res.status(401).json({ error: "Access token missing or invalid. Please log in again." });
+    const userId = req.query.user_id;
+    const accessToken = req.query.access_token;
+
+    if (!userId || !accessToken) {
+        return res.status(400).json({ error: "Missing user_id or access_token" });
+    }
+
+    spotifyApi.setAccessToken(accessToken);
+
+    const sql = "SELECT * FROM user_preferences WHERE user_id = ?";
+    db.query(sql, [userId], async (err, results) => {
+        if (err || results.length === 0) {
+            return res.status(500).json({ error: "Preferences not found" });
         }
 
-        // Step 1: Fetch 50 Top Artists
-        const topArtistsData = await spotifyApi.getMyTopArtists({ limit: 50 });
-        if (!topArtistsData.body.items.length) {
-            return res.status(404).json({ error: "No top artists found. Please listen to more music on Spotify." });
-        }
+        const prefs = results[0];
+        const genres = prefs.genres.split(',').map(g => g.trim()).filter(Boolean);
+        if (genres.length === 0) return res.status(400).json({ error: "No valid genres in preferences" });
 
-        const shuffledArtists = topArtistsData.body.items.sort(() => Math.random() - 0.5);
-        let recommendedTracks = [];
+        const clamp = (val, min, max) => Math.max(min, Math.min(val, max));
+        const tol = 0.3, tempoMargin = 40;
 
-        for (let i = 0; i < shuffledArtists.length; i++) {
-            const artist = shuffledArtists[i];
+        const query = `
+            SELECT * FROM tracks
+            WHERE track_genre IN (${genres.map(() => '?').join(',')})
+              AND danceability BETWEEN ? AND ?
+              AND energy BETWEEN ? AND ?
+              AND liveness BETWEEN ? AND ?
+              AND valence BETWEEN ? AND ?
+              AND tempo BETWEEN ? AND ?
+              AND speechiness BETWEEN ? AND ?
+              AND acousticness BETWEEN ? AND ?
+            ORDER BY RAND()
+            LIMIT 100
+        `;
 
-            try {
-                // Step 2: Fetch top tracks for the artist
-                const topTracksData = await spotifyApi.getArtistTopTracks(artist.id, 'US');
+        const values = [
+            ...genres,
+            clamp(prefs.danceability - tol, 0, 1), clamp(prefs.danceability + tol, 0, 1),
+            clamp(prefs.energy - tol, 0, 1), clamp(prefs.energy + tol, 0, 1),
+            clamp(prefs.liveness - tol, 0, 1), clamp(prefs.liveness + tol, 0, 1),
+            clamp(prefs.valence - tol, 0, 1), clamp(prefs.valence + tol, 0, 1),
+            clamp(prefs.tempo - tempoMargin, 0, 250), clamp(prefs.tempo + tempoMargin, 0, 250),
+            clamp(prefs.speechiness - tol, 0, 1), clamp(prefs.speechiness + tol, 0, 1),
+            clamp(prefs.acousticness - tol, 0, 1), clamp(prefs.acousticness + tol, 0, 1),
+        ];
 
-                if (topTracksData.body.tracks.length > 0) {
-                    const randomTrack = topTracksData.body.tracks[Math.floor(Math.random() * topTracksData.body.tracks.length)];
-                    recommendedTracks.push(randomTrack);
-                }
-            } catch (error) {
-                console.error(`Skipping artist ${artist.name} due to error:`, error.message);
+        db.query(query, values, async (err, tracks) => {
+            if (err || tracks.length === 0) {
+                console.warn("Fallback triggered");
+                const fallback = `SELECT * FROM tracks WHERE track_genre IN (${genres.map(() => '?').join(',')}) ORDER BY RAND() LIMIT 50`;
+                db.query(fallback, genres, async (fbErr, fallbackTracks) => {
+                    if (fbErr || fallbackTracks.length === 0) return res.status(500).json({ error: "Fallback failed" });
+                    return respondWithSpotifyMetadata(fallbackTracks, res);
+                });
+            } else {
+                return respondWithSpotifyMetadata(tracks, res);
             }
-
-            // Stop after collecting 5 unique songs from 5 different artists
-            if (recommendedTracks.length >= 5) break;
-        }
-
-        if (recommendedTracks.length === 0) {
-            return res.status(500).json({ error: "No recommendations found. Try listening to more music." });
-        }
-
-        res.json(recommendedTracks);
-    } catch (error) {
-        console.error("Error fetching recommendations:", error);
-        res.status(500).json({ error: "Failed to fetch recommendations", details: error.message });
-    }
-});
-
-
-
-// ==================== Store Liked Songs in MySQL ==================== //
-app.post('/like-song', (req, res) => {
-    const { spotify_id, title, artist, album, image_url } = req.body;
-
-    if (!spotify_id || !title || !artist || !album || !image_url) {
-        console.error("Missing data in request:", req.body);
-        return res.status(400).json({ error: "Missing required song data." });
-    }
-
-    const sql = `INSERT INTO songs (spotify_id, title, artist, album, image_url) 
-                 VALUES (?, ?, ?, ?, ?) 
-                 ON DUPLICATE KEY UPDATE liked_at = CURRENT_TIMESTAMP`;
-
-    db.query(sql, [spotify_id, title, artist, album, image_url], (err) => {
-        if (err) {
-            console.error("Database Error:", err);
-            return res.status(500).send(err);
-        }
-        res.send({ message: "Song stored in database successfully" });
+        });
     });
 });
 
-// ==================== Generate Playlist & Add Songs ==================== //
+//---------------------------------------- Spotify Track Metadata Fetcher ----------------------------------------//
+async function respondWithSpotifyMetadata(trackRows, res) {
+    const ids = trackRows.map(t => t.track_id).filter(id => typeof id === 'string' && id.length === 22);
+    if (ids.length === 0) return res.status(500).json({ error: "No valid Spotify IDs found." });
+
+    try {
+        const meta = await Promise.all(ids.map(id =>
+            spotifyApi.getTrack(id).then(r => r.body).catch(() => null)
+        ));
+        const validTracks = meta.filter(Boolean);
+        res.json(validTracks);
+    } catch (error) {
+        res.status(500).json({ error: "Spotify API failed" });
+    }
+}
+
+//---------------------------------------- Like Song (Add to MySQL DB) ----------------------------------------//
+app.post('/like-song', (req, res) => {
+    const { spotify_id, title, artist, album, image_url } = req.body;
+    if (!spotify_id || !title || !artist || !album || !image_url) {
+        return res.status(400).json({ error: "Missing required song data." });
+    }
+
+    const sql = `INSERT INTO songs (spotify_id, title, artist, album, image_url)
+                 VALUES (?, ?, ?, ?, ?)
+                 ON DUPLICATE KEY UPDATE liked_at = CURRENT_TIMESTAMP`;
+
+    db.query(sql, [spotify_id, title, artist, album, image_url], (err) => {
+        if (err) return res.status(500).send(err);
+        res.send({ message: "Song stored successfully" });
+    });
+});
+
+//---------------------------------------- Playlist Generator ----------------------------------------//
 app.post('/generate-playlist', async (req, res) => {
     try {
         const { user_id, playlist_name } = req.body;
         if (!user_id || !playlist_name?.trim()) {
-            return res.status(400).json({ error: "User ID and Playlist name are required." });
+            return res.status(400).json({ error: "User ID and Playlist name required." });
         }
 
-        // Create a new playlist on Spotify
         const playlistData = await spotifyApi.createPlaylist(user_id, {
             name: playlist_name.trim(),
-            description: "Playlist generated from liked songs",
             public: false
         });
 
-        if (!playlistData.body?.id) {
-            return res.status(500).json({ error: "Failed to create playlist." });
-        }
-
         const playlistId = playlistData.body.id;
-        console.log(`Playlist "${playlist_name}" created with ID: ${playlistId}`);
 
-        // Retrieve liked songs from the database
         db.query("SELECT spotify_id FROM songs", async (err, results) => {
-            if (err) return res.status(500).json({ error: "Database error retrieving liked songs." });
-            if (results.length === 0) return res.status(400).json({ error: "No liked songs found." });
+            if (err || results.length === 0) return res.status(500).json({ error: "No liked songs" });
 
             const trackUris = results.map(row => `spotify:track:${row.spotify_id}`);
             await spotifyApi.addTracksToPlaylist(playlistId, trackUris);
-            console.log(`Added ${trackUris.length} songs to playlist.`);
-
-            res.json({ message: `Playlist "${playlist_name}" created successfully!`, playlistId });
+            res.json({ message: "Playlist created!", playlistId });
         });
-
     } catch (error) {
-        console.error("Error generating playlist:", error);
-        res.status(500).json({ error: "Failed to generate playlist", details: error.message });
+        res.status(500).json({ error: "Failed to generate playlist" });
     }
 });
 
-
-// ==================== Clear Liked Songs and Generate Playlist (LikedSongs.js) ==================== //
-// Get all liked songs
+//---------------------------------------- Like Songs: Get & Clear ----------------------------------------//
 app.get('/get-liked-songs', (req, res) => {
     db.query("SELECT * FROM songs", (err, results) => {
-        if (err) return res.status(500).json({ error: "Database error" });
+        if (err) return res.status(500).json({ error: "DB error" });
         res.json(results);
     });
 });
-
-// Clear all liked songs
 app.post('/clear-liked-songs', (req, res) => {
     db.query("DELETE FROM songs", (err) => {
         if (err) return res.status(500).json({ error: "Failed to clear songs" });
-        res.json({ message: "Liked songs cleared successfully" });
+        res.json({ message: "Liked songs cleared" });
     });
 });
-// ==================== Search Songs (Searchbar/ Tinder.GUI) ==================== //
+
+//---------------------------------------- Track Search (Search Bar) ----------------------------------------//
 app.get('/search-track', async (req, res) => {
+    const query = req.query.q;
+    const token = req.query.access_token;
+    if (!query || !token) return res.status(400).json({ error: "Missing query or token" });
+
+    spotifyApi.setAccessToken(token);
     try {
-        const query = req.query.q;
-        if (!query) return res.status(400).json({ error: "Missing search query." });
-
         const data = await spotifyApi.searchTracks(query, { limit: 1 });
-        if (!data.body.tracks.items.length) return res.status(404).json({ error: "No track found." });
-
+        if (!data.body.tracks.items.length) return res.status(404).json({ error: "No track found" });
         res.json(data.body.tracks.items[0]);
     } catch (error) {
-        console.error("Error in /search-track:", error);
-        res.status(500).json({ error: "Search failed." });
+        res.status(500).json({ error: "Spotify search failed" });
     }
 });
 
+//---------------------------------------- Preferences: Save & Clear ----------------------------------------//
+app.post('/save-preferences', (req, res) => {
+    const {
+        user_id, genres,
+        danceability, energy, liveness,
+        valence, tempo, speechiness, acousticness
+    } = req.body;
 
+    if (!user_id || !genres) return res.status(400).json({ error: "Missing user ID or genres" });
 
-// ==================== Start Express Server ==================== //
+    const sql = `
+        INSERT INTO user_preferences (
+            user_id, genres, danceability, energy, liveness,
+            valence, tempo, speechiness, acousticness
+        )
+        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
+        ON DUPLICATE KEY UPDATE
+            genres = VALUES(genres),
+            danceability = VALUES(danceability),
+            energy = VALUES(energy),
+            liveness = VALUES(liveness),
+            valence = VALUES(valence),
+            tempo = VALUES(tempo),
+            speechiness = VALUES(speechiness),
+            acousticness = VALUES(acousticness)
+    `;
+
+    const values = [user_id, genres, danceability, energy, liveness, valence, tempo, speechiness, acousticness];
+    db.query(sql, values, (err) => {
+        if (err) return res.status(500).json({ error: "DB error saving preferences" });
+        res.json({ message: "Preferences saved" });
+    });
+});
+app.post('/clear-preferences', (req, res) => {
+    const { user_id } = req.body;
+    if (!user_id) return res.status(400).json({ error: "Missing user ID" });
+
+    db.query("DELETE FROM user_preferences WHERE user_id = ?", [user_id], (err) => {
+        if (err) return res.status(500).json({ error: "DB error clearing preferences" });
+        res.json({ message: "Preferences cleared" });
+    });
+});
+
+//---------------------------------------- Start Server ----------------------------------------//
 app.listen(port, () => console.log(`Server running on http://localhost:${port}`));

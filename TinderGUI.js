@@ -1,38 +1,17 @@
+//---------------------------------------- Global Swipe State ----------------------------------------//
 let currentSongIndex = 0;
 let songs = [];
 let songCard, songCardWrapper;
 let startX, isHolding = false;
 const threshold = 200;
 
-
-//Search for song and refresh song card
-async function searchAndInjectSong() {
-    const query = document.getElementById("song-search-input").value;
-    if (!query) return;
-
-    try {
-        const response = await fetch(`http://localhost:5000/search-track?q=${encodeURIComponent(query)}`);
-        if (!response.ok) throw new Error("Search failed");
-
-        const track = await response.json();
-        songs.splice(currentSongIndex, 0, track);
-        displaySong();
-    } catch (error) {
-        alert("No results or error searching.");
-        console.error(error);
-    }
-}
-
-
-
-
+//---------------------------------------- DOM Ready Events ----------------------------------------//
 document.addEventListener("DOMContentLoaded", () => {
     songCard = document.getElementById("song-card");
     songCardWrapper = document.getElementById("song-card-wrapper");
 
     fetchRecommendations();
 
-    // Hook up Liked Songs button
     const likedSongsBtn = document.getElementById("liked-songs-btn");
     if (likedSongsBtn) {
         likedSongsBtn.addEventListener("click", () => {
@@ -41,49 +20,41 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 });
 
-//Fetch Recommendations from web api.
+//---------------------------------------- Fetch Recommendations from API ----------------------------------------//
 async function fetchRecommendations() {
     try {
-        console.log("Fetching recommendations...");
-        const response = await fetch('http://localhost:5000/get-recommendations');
+        const userId = localStorage.getItem('spotify_user_id');
+        const accessToken = localStorage.getItem('spotify_access_token');
+        if (!userId || !accessToken) throw new Error("Missing credentials");
+
+        const response = await fetch(`http://localhost:5000/get-recommendations?user_id=${userId}&access_token=${accessToken}`);
         if (!response.ok) throw new Error(`HTTP error! Status: ${response.status}`);
-        
+
         songs = await response.json();
         if (!songs || songs.length === 0) throw new Error("No songs received");
 
         currentSongIndex = 0;
         displaySong();
-
     } catch (error) {
         console.error("Error fetching recommendations:", error);
-        alert("Failed to fetch recommendations. Check console for details.");
+        alert("Failed to fetch recommendations.");
     }
 }
 
-//Display Song to song card
-function displaySong() {
+//---------------------------------------- Display a Song on the Card ----------------------------------------//
+async function displaySong() {
     if (currentSongIndex >= songs.length) {
         alert("No more songs to display");
         return;
     }
 
-    // Hide everything before loading
-    songCard.style.opacity = "0";
-    document.getElementById("left-zone").style.opacity = "0";
-    document.getElementById("right-zone").style.opacity = "0";
-
     const song = songs[currentSongIndex];
-    console.log("Displaying song:", song);
-
-    // Set song details
     document.getElementById("song-image").src = song.album.images[0]?.url || "default.jpg";
     document.getElementById("song-title").textContent = song.name;
     document.getElementById("song-artist").textContent = song.artists[0]?.name || "Unknown Artist";
     document.getElementById("song-album").textContent = song.album.name || "Unknown Album";
 
     songCard.style.transform = "translateX(0px) rotate(0deg)";
-
-    // Fade everything in together
     setTimeout(() => {
         songCard.style.opacity = "1";
         document.getElementById("left-zone").style.opacity = "1";
@@ -91,9 +62,7 @@ function displaySong() {
     }, 50);
 }
 
-
-
-// Swipe interaction logic
+//---------------------------------------- Swipe Logic ----------------------------------------//
 document.addEventListener("mousedown", (event) => {
     if (!songCardWrapper?.contains(event.target)) return;
     isHolding = true;
@@ -130,31 +99,26 @@ document.addEventListener("mouseup", (event) => {
     }
 });
 
+//---------------------------------------- Move to Next Song ----------------------------------------//
 function nextSong() {
     currentSongIndex++;
-
     songCard.style.opacity = "0";
     document.getElementById("left-zone").style.opacity = "0";
     document.getElementById("right-zone").style.opacity = "0";
 
-
-    // Reset swipe-related styles
     songCard.classList.remove("swipe-right", "swipe-left");
     songCard.style.transition = "none";
     songCard.style.transform = "translateX(0px) rotate(0deg)";
-    songCard.style.opacity = "0"; // Hide card before showing next
+    songCard.style.opacity = "0";
 
     if (currentSongIndex < songs.length) {
-        // Wait briefly so swipe-out feels natural before fading next song in
-        setTimeout(() => {
-            displaySong();
-        }, 200); // Adjust as needed
+        setTimeout(() => displaySong(), 200);
     } else {
-        fetchRecommendations(); // Loop back to fresh set
+        fetchRecommendations(); // Load more
     }
 }
 
-//Like Song Button
+//---------------------------------------- Like Song & Save ----------------------------------------//
 async function likeSong(song) {
     const songData = {
         spotify_id: song.id,
@@ -174,5 +138,24 @@ async function likeSong(song) {
         console.log("Liked song saved:", result);
     } catch (error) {
         console.error("Failed to save liked song:", error);
+    }
+}
+
+//---------------------------------------- Manual Search Song ----------------------------------------//
+async function searchAndInjectSong() {
+    const query = document.getElementById("song-search-input").value;
+    const token = localStorage.getItem('spotify_access_token');
+    if (!query || !token) return;
+
+    try {
+        const response = await fetch(`http://localhost:5000/search-track?q=${encodeURIComponent(query)}&access_token=${token}`);
+        if (!response.ok) throw new Error("Search failed");
+
+        const track = await response.json();
+        songs.splice(currentSongIndex, 0, track);
+        displaySong();
+    } catch (err) {
+        console.error("Search error:", err);
+        alert("Search failed or no track found");
     }
 }
