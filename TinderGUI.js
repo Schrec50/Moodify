@@ -4,6 +4,7 @@ let songs = [];
 let songCard, songCardWrapper;
 let startX, isHolding = false;
 const threshold = 200;
+let undoStack = [];
 
 //---------------------------------------- DOM Ready Events ----------------------------------------//
 document.addEventListener("DOMContentLoaded", () => {
@@ -87,20 +88,25 @@ document.addEventListener("mouseup", (event) => {
     if (diff > threshold || cardRect.right > window.innerWidth - 150) {
         songCard.classList.add("swipe-right");
         likeSong(songs[currentSongIndex]);
-        setTimeout(nextSong, 300);
+        setTimeout(() => nextSong(true), 300); // Pass `true` for liked
     } else if (diff < -threshold || cardRect.left < 150) {
         songCard.classList.add("swipe-left");
         setTimeout(() => {
-            nextSong();
+            nextSong(false);
             songCard.classList.remove("swipe-left");
         }, 300);
-    } else {
+    }else {
         songCard.style.transform = "translateX(0px) rotate(0deg)";
     }
 });
 
 //---------------------------------------- Move to Next Song ----------------------------------------//
-function nextSong() {
+function nextSong(liked = false) {
+    const current = songs[currentSongIndex];
+    if (current) {
+        undoStack.push({ ...current, wasLiked: liked });
+    }
+
     currentSongIndex++;
     songCard.style.opacity = "0";
     document.getElementById("left-zone").style.opacity = "0";
@@ -114,9 +120,39 @@ function nextSong() {
     if (currentSongIndex < songs.length) {
         setTimeout(() => displaySong(), 200);
     } else {
-        fetchRecommendations(); // Load more
+        fetchRecommendations();
     }
 }
+
+//---------------------------------------- Undo Song Swipe----------------------------------------//
+function undoSwipe() {
+    if (undoStack.length === 0) {
+        alert("No Previous Swipe Stored!");
+        return;
+    }
+
+    const lastEntry = undoStack.pop();
+    const { id, wasLiked } = lastEntry;
+
+    // Clean duplicate
+    songs = songs.filter(song => song.id !== id);
+
+    // remove from DB if it was liked
+    if (wasLiked) {
+        fetch('http://localhost:5000/unlike-song', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ spotify_id: id })
+        }).then(res => res.json())
+          .then(data => console.log("Undo: song removed from DB", data))
+          .catch(err => console.error("Undo: Failed to remove song from DB", err));
+    }
+
+    currentSongIndex = Math.max(0, currentSongIndex - 1);
+    songs.splice(currentSongIndex, 0, lastEntry);
+    displaySong();
+}
+
 
 //---------------------------------------- Like Song & Save ----------------------------------------//
 async function likeSong(song) {

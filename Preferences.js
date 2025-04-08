@@ -73,17 +73,58 @@ document.addEventListener("DOMContentLoaded", () => {
     const subGenreContainer = document.getElementById("sub-genre-container");
 
     const genreMap = {
-        pop: ["pop", "pop-film", "power-pop"],
-        rock: ["rock", "alt-rock", "hard-rock", "punk", "punk-rock", "rock-n-roll", "grunge", "garage"],
-        hiphop: ["hip-hop", "r-n-b", "emo"],
-        electronic: ["edm", "electronic", "electro", "house", "techno", "trance", "dubstep", "minimal-techno", "deep-house"],
-        metal: ["metal", "heavy-metal", "death-metal", "black-metal", "metalcore", "grindcore"],
-        indie: ["indie", "indie-pop", "singer-songwriter", "folk", "alternative", "songwriter", "guitar"],
-        latin: ["latin", "latino", "salsa", "samba", "sertanejo", "mpb", "forro", "pagode", "brazil"],
-        japanese: ["j-pop", "j-rock", "j-dance", "j-idol", "anime"],
-        jazz: ["jazz", "blues", "funk", "soul"],
-        other: ["ambient", "chill", "classical", "comedy", "gospel", "opera", "new-age", "study", "children", "acoustic", "piano", "sleep", "disney", "show-tunes"]
+        pop: [
+          "pop", "pop-film", "power-pop", "party", "romance", "dance", "dancehall",
+          "happy", "latin", "latino", "reggaeton", "mandopop", "cantopop"
+        ],
+        rock: [
+          "rock", "alt-rock", "hard-rock", "punk", "punk-rock", "rock-n-roll",
+          "grunge", "garage", "psych-rock", "rockabilly", "british"
+        ],
+        hiphop: [
+          "hip-hop", "r-n-b", "emo"
+        ],
+        electronic: [
+          "edm", "electronic", "electro", "dubstep", "dub", "idm", "deep-house",
+          "detroit-techno", "minimal-techno", "disco", "club", "breakbeat",
+          "drum-and-bass", "chicago-house", "progressive-house"
+        ],
+        metal: [
+          "metal", "heavy-metal", "black-metal", "death-metal", "metalcore",
+          "grindcore", "hardcore", "goth", "industrial"
+        ],
+        indie: [
+          "indie", "indie-pop", "alternative", "folk", "singer-songwriter",
+          "songwriter", "acoustic", "guitar"
+        ],
+        world: [
+          "brazil", "forro", "mpb", "pagode", "samba", "sertanejo", "french",
+          "german", "spanish", "afrobeat", "iranian", "indian", "malay"
+        ],
+        jazz: [
+          "jazz", "blues", "bluegrass", "funk", "soul", "ska"
+        ],
+        classical: [
+          "classical", "piano", "opera", "new-age", "ambient"
+        ],
+        asian: [
+          "j-pop", "j-rock", "j-dance", "j-idol", "anime", "k-pop"
+        ],
+        kids: [
+          "children", "disney", "show-tunes", "comedy", "honky-tonk", "kids"
+        ],
+        mood: [
+          "chill", "sleep", "sad", "happy", "groove"
+        ],
+        country: [
+          "country", "honky-tonk"
+        ],
+        reggae: [
+          "reggae"
+        ]
       };
+      
+      
 
       mainGenreSelect.addEventListener("change", () => {
         const selectedMain = mainGenreSelect.value;

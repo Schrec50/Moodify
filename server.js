@@ -159,6 +159,18 @@ app.post('/like-song', (req, res) => {
     });
 });
 
+//---------------------------------------- Undo Like (Remove from songs table) ----------------------------------------//
+app.post('/unlike-song', (req, res) => {
+    const { spotify_id } = req.body;
+    if (!spotify_id) return res.status(400).json({ error: "Missing spotify_id" });
+
+    db.query("DELETE FROM songs WHERE spotify_id = ?", [spotify_id], (err) => {
+        if (err) return res.status(500).json({ error: "Failed to unlike song" });
+        res.json({ message: "Song removed from liked songs" });
+    });
+});
+
+
 //---------------------------------------- Playlist Generator ----------------------------------------//
 app.post('/generate-playlist', async (req, res) => {
     try {
