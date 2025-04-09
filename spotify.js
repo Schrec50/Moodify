@@ -88,27 +88,32 @@ function setupLogoutButton() {
     console.log("Logout button is ready!");
 }
 
-document.addEventListener("DOMContentLoaded", function () {
-    const recommendButton = ensureElementExists("recommend-btn");
-    if (recommendButton) {
-        recommendButton.addEventListener("click", getRecommendations);
-    }
-});
+//document.addEventListener("DOMContentLoaded", function () {
+    //const recommendButton = ensureElementExists("recommend-btn");
+   // if (recommendButton) {
+        //recommendButton.addEventListener("click", getRecommendations);
+  //  }
+//});
 
-    //-------------------------------------------------- Get Reccomendations--------------------------------------------------//
-async function getRecommendations() {
-    try {
-        const response = await fetch('http://localhost:5000/get-recommendations');
-        if (!response.ok) {
-            alert("Failed to get recommendations.");
-            return;
+    //-------------------------------------------------- Get Recomemndations--------------------------------------------------//
+    async function getRecommendations() {
+        const userId = localStorage.getItem('spotify_user_id');
+        const accessToken = localStorage.getItem('spotify_access_token');
+    
+        try {
+            const response = await fetch(`http://localhost:5000/get-recommendations?user_id=${userId}&access_token=${accessToken}`);
+            if (!response.ok) {
+                alert("Failed to get recommendations.");
+                return;
+            }
+            const data = await response.json();
+            displayTopTracks(data);
+        } catch (error) {
+            console.error("Error getting recommended songs:", error);
+            alert("Error getting recommended songs.");
         }
-        const data = await response.json();
-        displayTopTracks(data);
-    } catch (error) {
-        alert("Error getting recommended songs.");
     }
-}
+    
 
     //---------------------------------------------------Display Top Tracks--------------------------------------------------//
 function displayTopTracks(tracks) {

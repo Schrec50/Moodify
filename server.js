@@ -97,7 +97,7 @@ app.get('/get-recommendations', async (req, res) => {
               AND speechiness BETWEEN ? AND ?
               AND acousticness BETWEEN ? AND ?
             ORDER BY RAND()
-            LIMIT 100
+            LIMIT 25
         `;
 
         const values = [
