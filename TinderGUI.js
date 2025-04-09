@@ -54,6 +54,7 @@ async function displaySong() {
     document.getElementById("song-title").textContent = song.name;
     document.getElementById("song-artist").textContent = song.artists[0]?.name || "Unknown Artist";
     document.getElementById("song-album").textContent = song.album.name || "Unknown Album";
+    document.getElementById("song-genre").textContent = song.track_genre || "Unknown Genre";
 
     songCard.style.transform = "translateX(0px) rotate(0deg)";
     setTimeout(() => {
@@ -105,6 +106,24 @@ function nextSong(liked = false) {
     const current = songs[currentSongIndex];
     if (current) {
         undoStack.push({ ...current, wasLiked: liked });
+
+        // Log swipe to backend
+        const userId = localStorage.getItem('spotify_user_id');
+        const action = liked ? 'like' : 'dislike';
+        const genre = current.track_genre || "Unknown";
+
+        if (userId && current.id) {
+            fetch('http://localhost:5000/log-swipe', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    user_id: userId,
+                    track_id: current.id,
+                    track_genre: genre,
+                    action: action
+                })
+            }).catch(err => console.error("Failed to log swipe:", err));
+        }
     }
 
     currentSongIndex++;
@@ -123,6 +142,7 @@ function nextSong(liked = false) {
         fetchRecommendations();
     }
 }
+
 
 //---------------------------------------- Undo Song Swipe----------------------------------------//
 function undoSwipe() {
@@ -195,3 +215,5 @@ async function searchAndInjectSong() {
         alert("Search failed or no track found");
     }
 }
+
+document.getElementById("song-genre").textContent = song.track_genre || "Unknown Genre";

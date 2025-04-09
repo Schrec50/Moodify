@@ -131,16 +131,28 @@ async function respondWithSpotifyMetadata(trackRows, res) {
     const ids = trackRows.map(t => t.track_id).filter(id => typeof id === 'string' && id.length === 22);
     if (ids.length === 0) return res.status(500).json({ error: "No valid Spotify IDs found." });
 
+    // Step 1: Build a lookup map from track_id to track_genre
+    const idToGenre = Object.fromEntries(trackRows.map(row => [row.track_id, row.track_genre]));
+
     try {
+        // Step 2: Fetch Spotify metadata and attach the genre
         const meta = await Promise.all(ids.map(id =>
-            spotifyApi.getTrack(id).then(r => r.body).catch(() => null)
+            spotifyApi.getTrack(id).then(r => {
+                const track = r.body;
+                track.track_genre = idToGenre[id] || "Unknown";
+                return track;
+            }).catch(() => null)
         ));
+
+        // Step 3: Filter and return only valid tracks
         const validTracks = meta.filter(Boolean);
         res.json(validTracks);
     } catch (error) {
+        console.error("Metadata fetch failed:", error);
         res.status(500).json({ error: "Spotify API failed" });
     }
 }
+
 
 //---------------------------------------- Like Song (Add to MySQL DB) ----------------------------------------//
 app.post('/like-song', (req, res) => {
@@ -270,6 +282,23 @@ app.post('/clear-preferences', (req, res) => {
         res.json({ message: "Preferences cleared" });
     });
 });
+
+//---------------------------------------- Log Swipe----------------------------------------//
+app.post('/log-swipe', (req, res) => {
+    const { user_id, track_id, track_genre, action } = req.body;
+
+    if (!user_id || !track_id || !track_genre || !action) {
+        return res.status(400).json({ error: "Missing required swipe info" });
+    }
+
+    const sql = `INSERT INTO swipes (user_id, track_id, track_genre, action)
+                 VALUES (?, ?, ?, ?)`;
+    db.query(sql, [user_id, track_id, track_genre, action], (err) => {
+        if (err) return res.status(500).json({ error: "Failed to log swipe" });
+        res.json({ message: "Swipe logged successfully" });
+    });
+});
+
 
 //---------------------------------------- Start Server ----------------------------------------//
 app.listen(port, () => console.log(`Server running on http://localhost:${port}`));
