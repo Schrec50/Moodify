@@ -631,3 +631,25 @@ html {
     background-color: hsla(128, 55.00%, 49.11%, 1.00);
     transform: scale(1.05);
 }
+
+/*---------------------------------------------------------------Liked Songs: Playlist Name Reccomend Button------------------------------------------------------------*/
+
+.nameButton {
+    display: flex;
+    border: 1px solid #000;
+    border-radius: 15px;
+    background-color: hsla(128, 55.00%, 59.11%, 1.00);
+    font-family: system-ui;
+    color: white;
+    font-size: 20px;
+    font-weight: 600;
+    width: 220px;
+    height: 50px;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+}
+
+.nameButton:hover {
+    background-color: hsla(128, 55.00%, 49.11%, 1.00);
+}

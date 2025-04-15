@@ -1,13 +1,29 @@
-
-//---------------------------------------------------------------------------------------------------------------------------
 document.addEventListener("DOMContentLoaded", loadLikedSongs);
 
-// Handle Playlist Generation
-document.getElementById("generate-playlist-btn").addEventListener("click", async () => {
+const nameBtn = document.getElementById('name-suggest-btn');
+const nameTxt = document.getElementById('name-suggestion');
+const genBtn  = document.getElementById('generate-playlist-btn');
+
+let currentName = '';
+
+function pickName() {
+    return generateGoofyNameFromGenres([]);
+}
+
+nameBtn.addEventListener('click', () => {
+    currentName = pickName();
+    nameTxt.textContent = `Name: ${currentName}`;
+    nameTxt.style.display = 'block';
+
+    nameBtn.textContent = 'Reroll';
+    genBtn.textContent  = 'Use & Generate';
+});
+
+genBtn.addEventListener('click', async () => {
     const userId = localStorage.getItem('spotify_user_id');
     if (!userId) return alert("User ID not found. Try logging in again.");
 
-    let playlistName = prompt("Enter a name for your playlist:", "Moodify Playlist");
+    let playlistName = currentName || prompt("Enter a name for your playlist:", "Moodify Playlist");
     if (!playlistName) return;
 
     const response = await fetch('http://localhost:5000/generate-playlist', {
@@ -17,25 +33,29 @@ document.getElementById("generate-playlist-btn").addEventListener("click", async
     });
 
     const data = await response.json();
-    alert(response.ok ? `Playlist "${playlistName}" created successfully!` : `Error: ${data.error}`);
+    alert(response.ok
+        ? `Playlist "${playlistName}" created successfully!`
+        : `Error: ${data.error}`);
+
+    currentName = '';
+    nameTxt.style.display = 'none';
+    nameBtn.textContent = 'Name Idea';
+    genBtn.textContent = 'Generate Playlist';
 });
 
-// Handle Clearing Liked Songs
 document.getElementById("clear-liked-songs-btn").addEventListener("click", async () => {
     if (!confirm("Are you sure you want to clear all liked songs? This cannot be undone.")) return;
 
     await fetch('http://localhost:5000/clear-liked-songs', { method: 'POST' });
     alert("All liked songs have been cleared.");
-    loadLikedSongs(); // Refresh list
+    loadLikedSongs();
 });
-
-document.addEventListener("DOMContentLoaded", loadLikedSongs);
 
 async function loadLikedSongs() {
     const response = await fetch('http://localhost:5000/get-liked-songs');
     const songs = await response.json();
     const container = document.getElementById("liked-songs-list");
-    container.innerHTML = ""; // Clear previous entries
+    container.innerHTML = "";
 
     songs.forEach(song => {
         const songElement = document.createElement("div");
