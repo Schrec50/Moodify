@@ -7,7 +7,7 @@ body {
   
   .container {
     max-width: 800px;
-    margin: 40px auto;
+    margin: -30px auto;
     padding: 0 20px;
   }
   
@@ -141,4 +141,54 @@ body {
         transform: translateX(0);
         opacity: 1;
     }
+}
+
+#genreChart {
+  width: 100% !important;
+  height: 400px !important;
+  max-height: 500px;
+}
+
+.right-stats-column {
+  position: absolute;
+  top: 200px; /* align with chart/profile */
+  right: 40px;
+  width: 300px;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+@media screen and (max-width: 1100px) {
+  .right-stats-column {
+    position: static;
+    width: 100%;
+    flex-direction: row;
+    justify-content: space-around;
+    margin-top: 40px;
+  }
+}
+
+
+
+.Song-Selection {
+  display: block;
+  box-sizing: border-box;
+  min-width: 0px;
+  border: 1px solid #000;
+  border-radius: 15px;
+  background-color: hsla(128, 55.00%, 59.11%, 1.00); /* same green as buttons */
+  font-family: system-ui;
+  color: white;
+  font-size: 22px;
+  font-weight: 600;
+  width: 200px;
+  height: 50px;
+  text-align: center;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0 auto;
+  position: relative;
+  top: -40px; /* tweak as needed */
 }
