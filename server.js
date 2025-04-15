@@ -299,6 +299,89 @@ app.post('/log-swipe', (req, res) => {
     });
 });
 
+//---------------------------------------- Metrics: Show Username----------------------------------------//
+app.get('/get-display-name', async (req, res) => {
+    const token = req.query.accessToken;
+    if (!token) return res.status(400).json({ error: "Missing access token" });
+
+    spotifyApi.setAccessToken(token);
+    try {
+        const data = await spotifyApi.getMe();
+        const displayName = data.body.display_name;
+        if (!displayName) return res.status(404).json({ error: "No display name found" });
+        res.json({ display_name: displayName });
+    } catch (error) {
+        res.status(500).json({ error: "Failed to fetch display name from Spotify" });
+    }
+});
+
+app.get('/get-user-name', async (req, res) => {
+    const token = req.query.accessToken;
+    if (!token) return res.status(400).json({ error: "Missing access token" });
+
+    spotifyApi.setAccessToken(token);
+    try {
+        const data = await spotifyApi.getMe();
+        const username = data.body.id;
+        if (!username) return res.status(404).json({ error: "No username found" });
+        res.json({ user_id: username });
+    } catch (error) {
+        res.status(500).json({ error: "Failed to fetch user ID from Spotify" });
+    }
+});
+
+app.get('/get-account-picture', async (req, res) => {
+    const token = req.query.accessToken;
+    if (!token) return res.status(400).json({ error: "Missing access token"})
+
+    spotifyApi.setAccessToken(token)
+    try{
+        const data = await spotifyApi.getMe();
+        const picture = data.body.images;
+        if(!picture) return res.status(400).json({ error: "No Account Picture found"})
+            res.json({images: picture});
+
+    }catch (error) {
+        res.status(500).json({ error: "Failed to Fetch Account Picture from Spotify"})
+    }
+});
+
+
+ //---------------------------------------- Metrics: Count Likes Dislikes----------------------------------------//
+ app.get('/count-swipes', (req, res) => {
+    const sql = `
+        SELECT 
+            SUM(action = 'like') AS likes,
+            SUM(action = 'dislike') AS dislikes
+        FROM swipes;
+    `;
+
+    db.query(sql, (err, results) => {
+        if (err) return res.status(500).json({ error: "Failed to count swipes" });
+        const { likes, dislikes } = results[0];
+        res.json({ likes, dislikes });
+    });
+});
+
+//---------------------------------------- Metrics.js: Swipe Stats----------------------------------------//
+app.get('/swipe-stats', (req, res) => {
+    const sql = `
+        SELECT 
+            track_genre,
+            action,
+            DAYNAME(swipe_time) AS day,
+            COUNT(*) AS count
+        FROM swipes
+        WHERE swipe_time >= NOW() - INTERVAL 7 DAY
+        GROUP BY track_genre, action, day;
+    `;
+
+    db.query(sql, (err, results) => {
+        if (err) return res.status(500).json({ error: "Failed to fetch swipe stats" });
+        res.json(results);
+    });
+});
+
 
 //---------------------------------------- Start Server ----------------------------------------//
 app.listen(port, () => console.log(`Server running on http://localhost:${port}`));

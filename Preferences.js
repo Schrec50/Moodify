@@ -3,24 +3,25 @@ const userId = localStorage.getItem('spotify_user_id');
 
 //---------------------------------------- Ranges for Preference Mapping ----------------------------------------//
 const vibeRanges = {
+    campfire: { danceability: 0.3, energy: 0.2, liveness: 0.1 },
     chill: { danceability: 0.4, energy: 0.3, liveness: 0.2 },
     groovy: { danceability: 0.7, energy: 0.6, liveness: 0.4 },
-    party: { danceability: 0.9, energy: 0.9, liveness: 0.8 },
-    acoustic: { danceability: 0.3, energy: 0.2, liveness: 0.1 }
+    party: { danceability: 0.9, energy: 0.9, liveness: 0.8 }
 };
 
 const moodRanges = {
+    melancholic: { valence: 0.3, tempo: 90 },
+    calm: { valence: 0.4, tempo: 95 },
     happy: { valence: 0.8, tempo: 125 },
-    melancholy: { valence: 0.3, tempo: 90 },
     motivated: { valence: 0.6, tempo: 135 },
-    calm: { valence: 0.4, tempo: 95 }
 };
 
 const talkingRanges = {
-    podcast: { speechiness: 0.8, acousticness: 0.2 },
-    organic: { speechiness: 0.3, acousticness: 0.7 },
-    experimental: { speechiness: 0.5, acousticness: 0.5 }
+  "Talk-Heavy": { speechiness: 0.8, acousticness: 0.2 },       
+  "Natural & Warm": { speechiness: 0.3, acousticness: 0.7 },   
+  "Abstract & Artsy": { speechiness: 0.5, acousticness: 0.5 }  
 };
+
 
 //---------------------------------------- Save Preferences to DB ----------------------------------------//
 function savePreferences() {

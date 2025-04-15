@@ -1,0 +1,144 @@
+body {
+    margin: 0;
+    font-family: 'Helvetica Neue', sans-serif;
+    background-color: #121212;
+    color: white;
+  }
+  
+  .container {
+    max-width: 800px;
+    margin: 40px auto;
+    padding: 0 20px;
+  }
+  
+  h1 {
+    font-size: 2.5rem;
+    font-weight: bold;
+    margin-bottom: 20px;
+  }
+  
+  .profile {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+    background-color: #1e1e1e;
+    padding: 20px;
+    border-radius: 16px;
+    margin-bottom: 30px;
+  }
+  
+  .pfp {
+    width: 80px;
+    height: 80px;
+    border-radius: 50%;
+    border: 3px solid #1db954;
+    object-fit: cover;
+  }
+  
+  .user-info h2 {
+    margin: 0;
+    font-size: 1.5rem;
+  }
+  
+  .user-info p {
+    margin: 0;
+    color: #b3b3b3;
+  }
+  
+  .section {
+    background-color: #1e1e1e;
+    padding: 20px;
+    border-radius: 16px;
+    margin-bottom: 30px;
+  }
+  
+  .bar-chart {
+    height: 200px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: #181818;
+    border-radius: 12px;
+    color: #b3b3b3;
+  }
+  
+  .stats {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: 20px;
+  }
+  
+  .stat-box {
+    background-color: #1e1e1e;
+    padding: 20px;
+    border-radius: 16px;
+  }
+  
+  .stat-box h4 {
+    margin-bottom: 10px;
+    font-size: 1rem;
+    color: #ffffff;
+  }
+  
+  .stat-box p {
+    font-size: 1.25rem;
+    font-weight: bold;
+    color: #1db954;
+  }
+
+  /*-------------------------------NavBar-------------------------------*/
+  
+  .NavContainer {
+    background: #212121;
+    display: flex;
+    padding: 10px;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.5);
+    position: relative;
+}
+
+.Navbar a {
+    color: white;
+    text-decoration: none;
+    padding: 10px 15px;
+    transition: background 0.3s;
+}
+
+.Navbar a:hover {
+    background: rgba(255, 255, 255, 0.2);
+}
+
+.spotify-logo {
+    width: 60px;
+    height: 60px;
+    cursor: pointer;
+}
+
+.logo-container:hover .nav-menu {
+    display: flex;
+    animation: slideIn 1s forwards;
+    visibility: visible;
+}
+
+.nav-menu {
+    position: absolute;
+    top: 5px;
+    left: 75px;
+    background: hsla(128, 55.00%, 59.11%, 1.00);
+    opacity: .7 !important;
+    visibility: hidden;
+    flex-direction: row;
+    padding: 20px;
+    border-radius: 10%;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.5);
+}
+
+@keyframes slideIn {
+    from {
+        transform: translateX(-20px);
+        opacity: 0;
+    }
+    to {
+        transform: translateX(0);
+        opacity: 1;
+    }
+}
