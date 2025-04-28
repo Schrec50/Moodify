@@ -82,7 +82,7 @@ function setupLogoutButton() {
         localStorage.removeItem("spotify_user_id");
         sessionStorage.clear();
         setTimeout(() => {
-            window.location.href = "Landingpage.html";
+            window.location.href = "/html/Landingpage.html";
         }, 500);
     });
     console.log("Logout button is ready!");

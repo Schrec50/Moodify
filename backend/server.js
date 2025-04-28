@@ -1,7 +1,8 @@
-//---------------------------------------- Environment Setup ----------------------------------------//
+
 require('dotenv').config();
 const mysql = require('mysql2');
 const express = require('express');
+const path = require('path');
 const cors = require('cors');
 const SpotifyWebApi = require('spotify-web-api-node');
 
@@ -10,6 +11,20 @@ const port = 5000;
 
 app.use(cors());
 app.use(express.json());
+
+// Serve frontend static files
+app.use('/css', express.static(path.join(__dirname, '../frontend/css')));
+app.use('/js', express.static(path.join(__dirname, '../frontend/js')));
+app.use('/images', express.static(path.join(__dirname, '../frontend/images')));
+app.use('/html', express.static(path.join(__dirname, '../frontend/html')));
+
+// Default root -> Landingpage.html
+app.get('/', (req, res) => {
+    res.redirect('/html/Landingpage.html');
+});
+
+
+
 
 //---------------------------------------- MySQL Connection ----------------------------------------//
 const db = mysql.createConnection({
@@ -55,7 +70,8 @@ app.get('/callback', async (req, res) => {
         const userData = await spotifyApi.getMe();
         const userId = userData.body.id;
 
-        res.redirect(`http://127.0.0.1:5500/Page2.html?access_token=${data.body['access_token']}&refresh_token=${data.body['refresh_token']}&user_id=${userId}`);
+        res.redirect(`http://localhost:5000/html/Page2.html?access_token=${data.body['access_token']}&refresh_token=${data.body['refresh_token']}&user_id=${userId}`);
+
     } catch (error) {
         console.error("Spotify Auth Error:", error);
         res.status(500).send("Error during authentication.");
@@ -420,5 +436,4 @@ app.get('/top-artists', async (req, res) => {
   });
 
 
-//---------------------------------------- Start Server ----------------------------------------//
 app.listen(port, () => console.log(`Server running on http://localhost:${port}`));

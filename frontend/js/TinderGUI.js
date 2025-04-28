@@ -16,7 +16,7 @@ document.addEventListener("DOMContentLoaded", () => {
     const likedSongsBtn = document.getElementById("liked-songs-btn");
     if (likedSongsBtn) {
         likedSongsBtn.addEventListener("click", () => {
-            window.location.href = "LikedSongs.html";
+            window.location.href = "/html/LikedSongs.html";
         });
     }
 });

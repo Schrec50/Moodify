@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="en">
+ <head>
+  <meta charset="utf-8"/>
+  <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+  <title>
+   Account | Moodify
+  </title>
+  <link href="/css/Metrics.css" rel="stylesheet"/>
+ </head>
+ <body>
+  <div class="NavContainer">
+   <nav>
+    <div class="Navbar">
+     <div class="logo-container">
+      <img alt="Spotify Logo" class="spotify-logo" id="logo" src="/images/Moodify Logo.png"/>
+      <div class="nav-menu" id="navMenu">
+       <a href="/html/Page2.html">
+        Home
+       </a>
+       <a href="/html/AboutUs.html">
+        About us
+       </a>
+       <a href="/html/Preferences.html">
+        Preferences
+       </a>
+      </div>
+     </div>
+    </div>
+   </nav>
+  </div>
+  <!-- MAIN CONTENT WRAPPER -->
+  <div class="container">
+   <h1 class="Song-Selection">
+    Metrics
+   </h1>
+   <h1>
+    Account
+   </h1>
+   <div class="profile">
+    <img alt="Profile Picture" class="pfp" src="/images/default-pfp.jpg"/>
+    <div class="user-info">
+     <h2>
+      API call to get display_name
+     </h2>
+     <p>
+      API call to get Spotify username
+     </p>
+    </div>
+   </div>
+   <div class="section">
+    <h3>
+     Swipe Genre Breakdown (Past Week)
+    </h3>
+    <div style="margin-bottom: 10px;">
+     <label for="action-toggle">
+      View:
+     </label>
+     <select id="action-toggle">
+      <option value="like">
+       Liked
+      </option>
+      <option value="dislike">
+       Disliked
+      </option>
+     </select>
+    </div>
+    <canvas id="genreChart">
+    </canvas>
+   </div>
+  </div>
+  <!-- RIGHT COLUMN OUTSIDE CONTAINER -->
+  <div class="right-stats-column">
+   <div class="stat-box">
+    <h4>
+     Career Swipe Stats
+    </h4>
+    <p id="swipe-count">
+     Loading...
+    </p>
+   </div>
+   <div class="stat-box">
+    <h4>
+     Top Artist This Week
+    </h4>
+    <p>
+     Spotify API call to get top artist short term
+    </p>
+   </div>
+   <div class="stat-box">
+    <h4>
+     Mood Trends
+    </h4>
+    <div id="mood-trend-list">
+     <p>
+      Loading trends...
+     </p>
+    </div>
+   </div>
+  </div>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js">
+  </script>
+  <script src="/js/Metrics.js">
+  </script>
+ </body>
+</html>

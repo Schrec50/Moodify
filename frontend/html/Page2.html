@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="en">
+ <head>
+  <meta charset="utf-8"/>
+  <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+  <title>
+   Dashboard
+  </title>
+  <link href="/css/Page2.css" rel="stylesheet"/>
+ </head>
+ <body>
+  <!-- Navigation Bar/Account Name-->
+  <div class="NavContainer">
+   <nav>
+    <div class="Navbar">
+     <!-- Logo-->
+     <div class="logo-container">
+      <img alt="Spotify Logo" class="spotify-logo" id="logo" src="/images/Moodify Logo.png"/>
+      <!-- Account Name Box (Initially Hidden) -->
+      <div class="account-name-box">
+       <span id="spotify-user-name">
+        Loading..
+       </span>
+      </div>
+      <!-- Hover navigation Menu-->
+      <div class="nav-menu" id="navMenu">
+       <a href="/html/Preferences.html">
+        Preferences
+       </a>
+       <a href="/html/Metrics.html">
+        Metrics
+       </a>
+       <a href="/html/AboutUs.html">
+        About us
+       </a>
+      </div>
+     </div>
+    </div>
+   </nav>
+   <!-- Heart Button -->
+   <button class="Btn" id="liked-songs-btn">
+    <div class="sign">
+     ❤️
+    </div>
+    <div class="text">
+     Liked Songs
+    </div>
+   </button>
+   <!-- logout button -->
+   <button class="Btn" id="logout-btn">
+    <div class="sign">
+     <svg viewbox="0 0 512 512">
+      <path d="M377.9 105.9L500.7 228.7c7.2 7.2 11.3 17.1 11.3 27.3s-4.1 20.1-11.3 27.3L377.9 406.1c-6.4 6.4-15 9.9-24 9.9c-18.7 0-33.9-15.2-33.9-33.9l0-62.1-128 0c-17.7 0-32-14.3-32-32l0-64c0-17.7 14.3-32 32-32l128 0 0-62.1c0-18.7 15.2-33.9 33.9-33.9c9 0 17.6 3.6 24 9.9zM160 96L96 96c-17.7 0-32 14.3-32 32l0 256c0 17.7 14.3 32 32 32l64 0c17.7 0 32 14.3 32 32s-14.3 32-32 32l-64 0c-53 0-96-43-96-96L0 128C0 75 43 32 96 32l64 0c17.7 0 32 14.3 32 32s-14.3 32-32 32z">
+      </path>
+     </svg>
+    </div>
+    <div class="text">
+     Logout
+    </div>
+   </button>
+  </div>
+  <!-- Search bar -->
+  <div style="position: absolute; top: 25px; left: 1000px; display: flex; align-items: center; gap: 10px;">
+   <input id="song-search-input" placeholder="Search for a song..." style="padding: 8px 12px; border-radius: 20px; border: none; font-size: 14px; width: 200px;" type="text"/>
+   <button onclick="searchAndInjectSong()" style="background-color: #1DB954; color: white; border: none; border-radius: 20px; padding: 8px 16px; font-weight: bold; cursor: pointer;">
+    Search
+   </button>
+  </div>
+  <!-- Song Card Container-->
+  <div class="container">
+   <h1 class="Song-Selection">
+    Song Selection
+   </h1>
+   <div id="song-card-container">
+    <div class="zone" id="left-zone">
+     Dislike
+    </div>
+    <div id="song-card-wrapper">
+     <!-- Expanded interactive area -->
+     <div id="song-card">
+      <img alt="Song Image" id="song-image" src="/images/"/>
+      <h2 class="label" id="song-title">
+       Title
+      </h2>
+      <p class="label" id="song-artist">
+       Artist
+      </p>
+      <p class="label" id="song-album">
+       Album
+      </p>
+      <p class="label" id="song-genre">
+       Genre
+      </p>
+     </div>
+    </div>
+    <div class="zone" id="right-zone">
+     Like
+    </div>
+   </div>
+  </div>
+  <button class="undo-swipe-btn" onclick="undoSwipe()">
+   Undo Swipe
+  </button>
+  <!-- Used Scripts-->
+  <script>
+   // Store token from URL into localStorage
+    const urlParams = new URLSearchParams(window.location.search);
+    const accessToken = urlParams.get('access_token');
+    const userId = urlParams.get('user_id');
+
+    if (accessToken) localStorage.setItem('spotify_access_token', accessToken);
+    if (userId) localStorage.setItem('spotify_user_id', userId);
+  </script>
+  <script src="/js/TinderGUI.js">
+  </script>
+  <script src="/js/spotify.js">
+  </script>
+  <script src="/js/LikedSongs.js">
+  </script>
+ </body>
+</html>

@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="en">
+ <head>
+  <meta charset="utf-8"/>
+  <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+  <title>
+   Liked Songs
+  </title>
+  <link href="/css/Page2.css" rel="stylesheet"/>
+ </head>
+ <body>
+  <div class="NavContainer">
+   <nav>
+    <div class="Navbar">
+     <div class="logo-container">
+      <img alt="Spotify Logo" class="spotify-logo" id="logo" src="/images/Moodify Logo.png"/>
+      <div class="nav-menu" id="navMenu">
+       <a href="/html/Page2.html">
+        Home
+       </a>
+       <a href="/html/AboutUs.html">
+        About us
+       </a>
+       <a href="https://www.spotify.com/us/account/overview/">
+        Account
+       </a>
+      </div>
+     </div>
+    </div>
+   </nav>
+  </div>
+  <div class="container">
+   <h1 class="Song-Selection">
+    Liked Songs
+   </h1>
+   <div class="button-container">
+    <p id="name-suggestion" style="margin-top:20px;font-size:20px;font-weight:600;color:white;text-align:center;display:none;">
+    </p>
+    <button class="clearPlaylistButton" id="clear-liked-songs-btn">
+     Clear Liked Songs
+    </button>
+    <button class="nameButton" id="name-suggest-btn">
+     Name Idea
+    </button>
+    <button class="genPlaylistButton" id="generate-playlist-btn">
+     Generate Playlist
+    </button>
+   </div>
+   <div class="songs-grid" id="liked-songs-list">
+   </div>
+  </div>
+  <script src="/js/goofyNames.js">
+  </script>
+  <script src="/js/LikedSongs.js">
+  </script>
+ </body>
+</html>
