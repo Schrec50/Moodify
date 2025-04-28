@@ -382,6 +382,43 @@ app.get('/swipe-stats', (req, res) => {
     });
 });
 
+//---------------------------------------- Metrics.js: Mood Trends ----------------------------------------//
+app.get('/mood-trends', (req, res) => {
+    const sql = `
+        SELECT 
+            HOUR(swipe_time) AS hour,
+            DAYNAME(swipe_time) AS day,
+            track_genre,
+            COUNT(*) AS count
+        FROM swipes
+        WHERE action = 'like'
+          AND swipe_time >= NOW() - INTERVAL 7 DAY
+        GROUP BY day, hour, track_genre
+        ORDER BY count DESC
+        LIMIT 3;
+    `;
+
+    db.query(sql, (err, results) => {
+        if (err) return res.status(500).json({ error: "Trend query failed" });
+        res.json(results);
+    });
+});
+
+// ------------------------------------ Metrics.js (Top‑artists)  ------------------------------ //
+app.get('/top-artists', async (req, res) => {
+    const { accessToken, time_range = 'long_term', limit = 5 } = req.query; // “long_term” ≈ Spotify‑Wrapped vibe
+    if (!accessToken) return res.status(400).json({ error: 'Missing access token' });
+  
+    try {
+      spotifyApi.setAccessToken(accessToken);
+      const data = await spotifyApi.getMyTopArtists({ time_range, limit });
+      res.json(data.body);                       // full Spotify object → easier front‑end tweaks later
+    } catch (err) {
+      console.error('Top‑artists API fail:', err);
+      res.status(500).json({ error: 'Spotify top‑artist call failed' });
+    }
+  });
+
 
 //---------------------------------------- Start Server ----------------------------------------//
 app.listen(port, () => console.log(`Server running on http://localhost:${port}`));

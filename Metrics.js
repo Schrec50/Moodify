@@ -120,5 +120,90 @@ document.addEventListener("DOMContentLoaded", async () => {
     }
   }
 
+  // Mood Trends
+  async function loadMoodTrends() {
+    try {
+        const res = await fetch('http://localhost:5000/mood-trends');
+        const trends = await res.json();
+        const container = document.getElementById("mood-trend-list");
+
+        container.innerHTML = ""; // Clear loading text
+
+        trends.forEach(({ hour, day, track_genre }) => {
+            let timeOfDay = "the day";
+            if (hour >= 5 && hour < 12) timeOfDay = "the morning";
+            else if (hour >= 12 && hour < 17) timeOfDay = "the afternoon";
+            else if (hour >= 17 && hour < 22) timeOfDay = "the evening";
+            else timeOfDay = "late night";
+
+            const p = document.createElement("p");
+            p.textContent = `In ${timeOfDay} on ${day}s, you like listening to ${track_genre} music.`;
+            container.appendChild(p);
+        });
+    } catch (err) {
+        console.error("Failed to load mood trends:", err);
+        document.getElementById("mood-trend-list").textContent = "No mood trend data available.";
+    }
+}
+
+
+//Top Artists
+/* ---------------- TOP 5 ARTISTS (year‑to‑date) ---------------- */
+const topArtistBox = document.querySelector(
+  '.right-stats-column .stat-box:nth-child(2)'
+);
+
+// quick header update in case the HTML hasn’t been edited
+topArtistBox.innerHTML =
+  '<h4>Top 5 Artists (YTD)</h4><p>Loading…</p>';
+
+try {
+  const res = await fetch(
+    `http://localhost:5000/top-artists?accessToken=${token}&time_range=long_term&limit=5`
+  );
+  if (!res.ok) throw new Error('Bad response');
+  const data = await res.json();
+
+  if (data.items?.length) {
+    const ul = document.createElement('ul');
+    ul.style.listStyle = 'none';
+    ul.style.padding = 0;
+
+    data.items.forEach(artist => {
+      const li = document.createElement('li');
+      li.style.cssText =
+        'display:flex;align-items:center;gap:8px;margin-bottom:6px';
+
+      const img = document.createElement('img');
+      img.src =
+        artist.images?.[2]?.url || // smallest square (64 px)
+        artist.images?.pop()?.url || // fallback to largest if only one
+        'default-pfp.jpg';
+      img.width = img.height = 28;
+      img.style.borderRadius = '50%';
+
+      const span = document.createElement('span');
+      span.textContent = artist.name;
+
+      li.append(img, span);
+      ul.appendChild(li);
+    });
+
+    topArtistBox.replaceChildren(
+      topArtistBox.querySelector('h4'),
+      ul
+    );
+  } else {
+    topArtistBox.querySelector('p').textContent = 'No listening data';
+  }
+} catch (err) {
+  console.error('Top‑artist fetch error:', err);
+  topArtistBox.querySelector('p').textContent = 'No listening data';
+}
+
   updateChart();
+  loadMoodTrends();
+
+  
+
 });
