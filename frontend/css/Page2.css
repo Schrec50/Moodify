@@ -27,12 +27,7 @@ cursor: pointer;
     visibility: hidden;
     transition: opacity 0.3s ease, transform 0.3s ease;
 }
-/* Show box when hovering over the logo-container */
-.logo-container:hover .account-name-box {
-    opacity: 1;
-    visibility: visible;
-    transform: translateX(-50%) translateY(0px); /* Slide down */
-}
+
 
 .NavContainer {
     background: #212121;
@@ -45,44 +40,27 @@ cursor: pointer;
 .Navbar a {
     color: white; /* Link color */
     text-decoration: none; /* Remove underline */
-    padding: 10px 15px; /* Add padding */
-    transition: background 0.3s; /* Smooth background transition */
+    padding: 10px 40px; /* Add padding */   
 }
 
 .Navbar a:hover {
-    background: rgba(255, 255, 255, 0.2); /* Light hover effect */
+    background: hsla(128, 55.00%, 59.11%, 1.00);
+    border-radius: 15px; /* Light hover effect */
 }
 
- /* New slide in nav animation */
+ /* static nav bar */
 .nav-menu {
     position: absolute; /* Position absolute to slide out */
-    top: 5px; /* Align with the top of the logo */
-    left: 75px; /* Position to the right of the logo */
-    background: hsla(128, 55.00%, 59.11%, 1.00); /* Same background as NavContainer */
-    opacity: .7 !important;
-    visibility: hidden; /* Initially hidden */
+    top: 18%; /* Align with the top of the logo */
+    left: 7%; /* Position to the right of the logo */
+    background: rgba(93, 208, 108, 0); /* Same background as NavContainer */
+    visibility: visible; /* Initially hidden */
     flex-direction: row; /* Stack links vertically */
     padding: 20px; /* Add padding */
     border-radius: 10%;
-    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.5); /* Add shadow for depth */
+   /* box-shadow: 0 2px 5px rgba(0, 0, 0, 0.5); /* Add shadow for depth */
 }
 
-.logo-container:hover .nav-menu {
-    display: flex; /* Show menu on hover */
-    animation: slideIn 1s forwards; /* Slide in animation */
-    visibility: visible;
-}
-
-@keyframes slideIn {
-    from {
-        transform: translateX(-20px); /* Start slightly off-screen */
-        opacity: 0; /* Start invisible */
-    }
-    to {
-        transform: translateX(0); /* End at original position */
-        opacity: 1; /* End visible */
-    }
-}
 
 /* logoutbutton and liked songs*/ 
 .Btn {
